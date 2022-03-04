@@ -35,13 +35,16 @@ public class LeaderElection implements Watcher {
     public void electLeader() throws InterruptedException, KeeperException {
         //store all created nodes in a list
         List<String> zChildren = zooKeeper.getChildren(ELECTION_NAMESPACE, false);
+        System.out.println(zChildren);
         //check for the smallest index in array and store
+        Collections.sort(zChildren);
         String smallestChild = zChildren.get(0);
 
-        if (smallestChild.equalsIgnoreCase(currentZnodeName))
+        if (smallestChild.equals(currentZnodeName)){
             System.out.println("I am the Leader");
-        else
-            System.out.println("I'm not Leader!! " + currentZnodeName + "is the leader");
+            return;
+        }
+        System.out.println("I'm not Leader!! " + smallestChild + " is the leader");
 
     }
 
