@@ -1,7 +1,12 @@
 # leaderelection
 
-A simple distributed system logic using Zookeeper to simplify selection of znodes,
+A simple distributed systems logic JAVA
 
+**`Tools`**
+
+**1**. Maven
+**2**. Zookeeper
+**3**. Java
 # Setup Apache Zookeeper #
     #you need JDK 1.8 or later installed on machine first ..
 Step
@@ -13,3 +18,10 @@ Step
 5. update dataDir in zoo.cfg file ->>>> eg.(mine) dataDir=home/***/zookeeper/logs
 
 --bin dir <> contains CL tools for zookeeper
+
+Demo includes
+1. create a child nodes to join cluster
+2. using Zookeeper to simplify selection a leader in a cluster( zookeeper algorithm makes it simple to elect a node)
+3. using watchers to trigger alerts on failure of a node , i.e stopped, deleted, noResponse, etc
+4. re-election a node to become a leader
+    
