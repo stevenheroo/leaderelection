@@ -1,14 +1,12 @@
 package clusters;
 
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
 
 import java.util.Collections;
 import java.util.List;
 
-public class LeaderElection {
+public class LeaderElection implements Watcher {
 
     private static final String PARENT_PATH_NAME = "/election";
     private final ZooKeeper zooKeeper;
@@ -27,20 +25,44 @@ public class LeaderElection {
     }
 
     public void reElectLeader() throws InterruptedException, KeeperException {
-        List<String> children = zooKeeper.getChildren(PARENT_PATH_NAME, false);
-        Collections.sort(children);
-        //check and store node in variable
-        String smallestChild = children.get(0);
+        Stat predecessorStat = null;
+        String predecessorName = "";
 
-        //check whether smallestChild name is same as currentNodeName
-        if (smallestChild.equals(currentNodeName)){
-            System.out.println("I am the Leader");
+        while (predecessorStat == null){
+            List<String> children = zooKeeper.getChildren(PARENT_PATH_NAME, false);
+            Collections.sort(children);
+            //check and store node in variable
+            String smallestChild = children.get(0);
+
+            //check whether smallestChild name is same as currentNodeName
+            if (smallestChild.equals(currentNodeName)){
+                System.out.println("I am the Leader");
+                return;
+            }
+            else {
+                int predecessorIndex = Collections.binarySearch(children, currentNodeName) -1;
+
+                //store name from predecessor Index
+                predecessorName = children.get(predecessorIndex);
+
+                //using watcher stat to track state of node,
+                //if failure of node successor is notified
+                predecessorStat = zooKeeper.exists(PARENT_PATH_NAME+ "/" + predecessorName, this);
+            }
         }
-        else {
-            System.out.println("I am not Leader " + smallestChild + " is the leader");
-//            int predecessorIndex = Collections.binarySearch(children, currentNodeName) -1;
-        }
+        System.out.println("WATCHING Z_NODE::::>> "+ predecessorName);
 
     }
 
+    @Override
+    public void process(WatchedEvent event) {
+        switch (event.getType()){
+            case NodeDeleted:
+                try {
+                    reElectLeader();
+                } catch (InterruptedException | KeeperException e) {
+                    e.printStackTrace();
+                }
+        }
+    }
 }
