@@ -23,5 +23,8 @@ Demo includes
 1. create a child nodes to join cluster
 2. using Zookeeper to simplify selection a leader in a cluster( zookeeper algorithm makes it simple to elect a node)
 3. using watchers to trigger alerts on failure of a node , i.e stopped, deleted, noResponse, etc
-4. re-election a node to become a leader
+   1. Fault tolerant implementation
+4. re-election a node to become a leader,
+   1. adding nodes dynamically
+   2. prevent hard effect elimination of node with no bottlenecks
     
