@@ -27,4 +27,6 @@ Demo includes
 4. re-election a node to become a leader,
    1. adding nodes dynamically
    2. prevent hard effect elimination of node with no bottlenecks
+5. Implementation of Service Registry & discovery
+6. 
     
