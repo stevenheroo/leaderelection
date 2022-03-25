@@ -5,6 +5,7 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import registry.LeaderCallBackAction;
 import registry.ServiceRegistry;
+import webservers.Server;
 
 import java.io.IOException;
 
@@ -19,15 +20,19 @@ public class Application implements Watcher {
     public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
         int currentPort = args.length == 1 ? Integer.parseInt(args[0]) : DEFAULT_PORT;
 
-        Application app = new Application();
-        app.connectToZookeeper();
-        ServiceRegistry serviceRegistry = new ServiceRegistry(zooKeeper);
-        LeaderCallBackAction callBackAction = new LeaderCallBackAction(serviceRegistry, currentPort);
-        LeaderElection election = new LeaderElection(zooKeeper, callBackAction);
-        election.creatingNodes();
-        election.reElectLeader();
-        app.run();
-        app.close();
+        Server server = new Server(currentPort);
+        server.startServer();
+        System.out.println("Server is listenning on port " + currentPort);
+
+//        Application app = new Application();
+//        app.connectToZookeeper();
+//        ServiceRegistry serviceRegistry = new ServiceRegistry(zooKeeper);
+//        LeaderCallBackAction callBackAction = new LeaderCallBackAction(serviceRegistry, currentPort);
+//        LeaderElection election = new LeaderElection(zooKeeper, callBackAction);
+//        election.creatingNodes();
+//        election.reElectLeader();
+//        app.run();
+//        app.close();
     }
 
     public void connectToZookeeper() throws IOException {
